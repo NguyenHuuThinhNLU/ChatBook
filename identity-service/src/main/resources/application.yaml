@@ -1,0 +1,21 @@
+server:
+  port : 8080
+  servlet:
+    context-path: /indentity
+
+spring:
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/test}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: ${DBMS_USERNAME:root}
+    password: ${DBMS_PASSWORD:root}
+#    Tao bang bang jpa voi hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+    signerKey: ${JWT_SIGNER_KEY:BE0T6g+UrAECQpCkxUF1Xj6NzSMIhnJ1dl3tFGwwH2oisjAaXOB+3QOX3nl3HD3r}
+    valid-duration: 3600 # in seconds
+    refreshable-duration: 360000 # in seconds

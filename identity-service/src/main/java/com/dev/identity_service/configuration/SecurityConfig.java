@@ -1,0 +1,86 @@
+package com.dev.identity_service.configuration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity // Cho phep su dung @PreAuthorize, @PostAuthorize, @Secured, @RolesAllowed
+public class SecurityConfig {
+
+    private static final String[] PUBLIC_ENDPOINT = {"/users", "/auth/token", "/auth/instrospect", "/auth/logout", "/auth/refresh"}; // DS cac endpoint public
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(request -> request
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+//                .hasAnyAuthority("ROLE_ADMIN")
+                .anyRequest().authenticated());
+
+        // Cung cap cho header 1 authentication token co the cho decoder moi co the hieu duoc token
+        http.oauth2ResourceServer(
+                oauth2 -> oauth2.jwt(jwtConfigurer ->
+                                jwtConfigurer.decoder(customJwtDecoder)
+                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())) // Cung cap cach ma hoa token
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Khi authentication failed thi se dieu huong cho user toi JwtAuthenticationEntryPoint
+        );
+
+
+        http.csrf(AbstractHttpConfigurer::disable);// bao ve endpoint truoc cross
+        return http.build();
+    }
+
+    // Cung cap de co the customize cach ma hoa token
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        // Cung cap cach ma hoa token, co the thay doi cach ma hoa token
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
+    // Cung cap cors filter de cho phep cac request tu ben ngoai truy cap vao API
+    // CorsFilter cho phep cac request tu ben ngoai truy cap vao API
+    // Tranh CORS (Cross-Origin Resource Sharing) error khi frontend va backend khac domain
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod("*"); // Cho phep tat ca cac method
+        corsConfiguration.addAllowedHeader("*"); // Cho phep tat ca cac header
+
+        // Khai bao cac endpoint duoc phep truy cap
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10); // 10 la muc do ma hoa, co the thay doi
+    }
+}
+

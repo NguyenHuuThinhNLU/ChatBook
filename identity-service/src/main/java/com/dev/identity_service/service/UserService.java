@@ -1,0 +1,95 @@
+package com.dev.identity_service.service;
+
+import com.dev.identity_service.dto.request.UserRequest;
+import com.dev.identity_service.dto.request.UserUpdateRequest;
+import com.dev.identity_service.dto.response.UserResponse;
+import com.dev.identity_service.entity.User;
+import com.dev.identity_service.exception.AppException;
+import com.dev.identity_service.exception.ErrorCode;
+import com.dev.identity_service.mapper.UserMapper;
+import com.dev.identity_service.repository.RoleRepository;
+import com.dev.identity_service.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+// All fields will be private, khong khai bao thi se la final
+public class UserService {
+    UserRepository userRepository;
+    UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
+
+    public UserResponse createUser(UserRequest request) {
+        User user = userMapper.toUser(request);
+        // Encode password before saving to database
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+//        // Set default role if not provided
+//        Set<Role> roles = new HashSet<>();
+//        roleRepository.findById(PredefinedRole.USER_ROLE)
+//                .ifPresent(roles::add);
+//
+//        user.setRoles(roles);
+        try {
+            user = userRepository.save(user); // Save user to the database
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        return userMapper.toUserResponse(user); // Save user to the database and return UserResponse
+    }
+
+    // PreAuthorize annotation is used to restrict access to this method based on user roles
+    //@PreAuthorize("hasRole('ADMIN')") // Only users with ADMIN role can access this method
+    // PreAuthorize se kiem tra quyen truoc khi thuc hien phuong thuc
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getUsers() {
+        log.info("Fetching all users from the database");
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList(); // ham finds all users in the database
+    }
+
+    @PostAuthorize("returnObject.username == authentication.name")
+    // PostAuthorize se kiem tra quyen sau khi thuc hien phuong thuc
+    public UserResponse findById(String userid) {
+        return userMapper.toUserResponse(userRepository.findById(userid).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)));
+    }
+
+    public UserResponse updatUser(String uid, UserUpdateRequest request) {
+        User user = userRepository.findById(uid).orElseThrow(() -> new RuntimeException("User not found with id: " + uid));
+        userMapper.upadateUser(user, request);
+        // Update user roles if provided
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Encode password before saving
+
+        var role = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(role)); // Set roles from the request
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public void deleteUser(String uid) {
+        User user = userRepository.findById(uid).orElseThrow(() -> new RuntimeException("User not found with id: " + uid));
+        userRepository.delete(user);
+    }
+
+    public UserResponse getInfo() {
+        var context = SecurityContextHolder.getContext(); // Get the current authentication context
+        String name = context.getAuthentication().getName(); // Get the username of the authenticated user
+
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+        return userMapper.toUserResponse(user); // Map the User entity to UserResponse DTO
+    }
+
+}
