@@ -1,14 +1,18 @@
 package com.dev.identity_service.service;
 
+import com.dev.identity_service.constant.PredefinedRole;
 import com.dev.identity_service.dto.request.UserRequest;
 import com.dev.identity_service.dto.request.UserUpdateRequest;
 import com.dev.identity_service.dto.response.UserResponse;
+import com.dev.identity_service.entity.Role;
 import com.dev.identity_service.entity.User;
 import com.dev.identity_service.exception.AppException;
 import com.dev.identity_service.exception.ErrorCode;
+import com.dev.identity_service.mapper.ProfileMapper;
 import com.dev.identity_service.mapper.UserMapper;
 import com.dev.identity_service.repository.RoleRepository;
 import com.dev.identity_service.repository.UserRepository;
+import com.dev.identity_service.repository.httpclient.ProfileClient;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -32,25 +36,29 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+    ProfileClient profileClient;
+    ProfileMapper profileMapper;
 
     public UserResponse createUser(UserRequest request) {
-        User user = userMapper.toUser(request);
-        // Encode password before saving to database
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
-//        // Set default role if not provided
-//        Set<Role> roles = new HashSet<>();
-//        roleRepository.findById(PredefinedRole.USER_ROLE)
-//                .ifPresent(roles::add);
-//
-//        user.setRoles(roles);
-        try {
-            user = userRepository.save(user); // Save user to the database
-        } catch (DataIntegrityViolationException e) {
-            throw new AppException(ErrorCode.USER_EXISTED);
-        }
-        return userMapper.toUserResponse(user); // Save user to the database and return UserResponse
+        User user = userMapper.toUser(request); // Convert UserRequest to User entity
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Encode password before saving
+
+        HashSet<Role> roles = new HashSet<>();
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
+
+        user.setRoles(roles);
+        user = userRepository.save(user); // Save the user to the database
+
+        var profileRequest = profileMapper.toUserProfileCreationRequest(request); // Convert UserRequest to UserProfileCreationRequest
+        profileRequest.setUserId(user.getUid());
+
+        var profileResponse = profileClient.createProfile(profileRequest); // Call the ProfileClient to create a user profile
+
+        return userMapper.toUserResponse(user); // Convert User entity to UserResponse DTO
     }
+
 
     // PreAuthorize annotation is used to restrict access to this method based on user roles
     //@PreAuthorize("hasRole('ADMIN')") // Only users with ADMIN role can access this method
