@@ -1,4 +1,4 @@
-package com.dev.profile_service.dto.request;
+package com.dev.identity_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ProfileCreateRequest {
-    String userId;
+public class UserProfileResponse {
+    String id;
     String firstName;
     String lastName;
     LocalDate dob;
