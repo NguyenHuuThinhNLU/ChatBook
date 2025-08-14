@@ -64,21 +64,6 @@ public class SecurityConfig {
     // Cung cap cors filter de cho phep cac request tu ben ngoai truy cap vao API
     // CorsFilter cho phep cac request tu ben ngoai truy cap vao API
     // Tranh CORS (Cross-Origin Resource Sharing) error khi frontend va backend khac domain
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//
-//        corsConfiguration.addAllowedOrigin("*");
-//        corsConfiguration.addAllowedMethod("*"); // Cho phep tat ca cac method
-//        corsConfiguration.addAllowedHeader("*"); // Cho phep tat ca cac header
-//
-//        // Khai bao cac endpoint duoc phep truy cap
-//        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-//        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-//
-//
-//        return new CorsFilter(urlBasedCorsConfigurationSource);
-//    }
 
     @Bean
     PasswordEncoder passwordEncoder() {

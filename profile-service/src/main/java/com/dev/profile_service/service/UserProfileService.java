@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class UserProfileService {
     @Autowired
     UserProfileRepository userProfileRepository;
+
     @Autowired
     UserProfileMapper userProfileMapper;
 
