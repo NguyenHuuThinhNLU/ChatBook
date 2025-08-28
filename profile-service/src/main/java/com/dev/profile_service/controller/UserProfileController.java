@@ -1,13 +1,13 @@
 package com.dev.profile_service.controller;
 
-import com.dev.profile_service.dto.request.ProfileCreateRequest;
 import com.dev.profile_service.dto.response.UserProfileResponse;
-import com.dev.profile_service.entity.UserProfile;
 import com.dev.profile_service.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +28,8 @@ public class UserProfileController {
         userProfileService.deleteProfile(profileId);
     }
 
+    @GetMapping("/users")
+    List<UserProfileResponse> getAllProfiles() {
+        return userProfileService.getAllProfiles();
+    }
 }
