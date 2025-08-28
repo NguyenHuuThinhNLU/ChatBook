@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -43,5 +45,13 @@ public class UserProfileService {
     public void deleteProfile(String id) {
         userProfileRepository.deleteById(id);
         log.info("User profile with id {} deleted successfully", id);
+    }
+
+    public List<UserProfileResponse> getAllProfiles() {
+        var profiles = userProfileRepository.findAll();
+
+        return profiles.stream()
+                .map(userProfileMapper::toUserProfileResponse)
+                .toList();
     }
 }
