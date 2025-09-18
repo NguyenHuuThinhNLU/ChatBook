@@ -22,7 +22,7 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/registration")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
         log.info("Controller: Create user");
         // Validate the request body using @Valid annotation
