@@ -1,5 +1,6 @@
-package com.dev.identity_service.configuration;
+package com.dev.profile_service.configuration;
 
+import com.dev.identity_service.configuration.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,16 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // Cho phep su dung @PreAuthorize, @PostAuthorize, @Secured, @RolesAllowed
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINT = {"/users/registration", "/auth/token", "/auth/instrospect", "/auth/logout", "/auth/refresh"}; // DS cac endpoint public
+    private static final String[] PUBLIC_ENDPOINT = {}; // DS cac endpoint public
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
@@ -65,9 +63,5 @@ public class SecurityConfig {
     // CorsFilter cho phep cac request tu ben ngoai truy cap vao API
     // Tranh CORS (Cross-Origin Resource Sharing) error khi frontend va backend khac domain
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10); // 10 la muc do ma hoa, co the thay doi
-    }
 }
 
