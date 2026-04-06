@@ -1,0 +1,69 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #4f4037;
+  background:
+    radial-gradient(circle at top, rgba(240, 220, 205, 0.8), transparent 30%),
+    linear-gradient(180deg, #f7efe8 0%, #fdfaf7 35%, #f5eee7 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --accent: #bd5d38;
+  --text-main: #2d211c;
+  --text-soft: #74645a;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-alt: #f8f2ed;
+  --border: rgba(120, 87, 65, 0.16);
+  --shadow-soft: 0 24px 60px rgba(78, 51, 36, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  width: min(1240px, calc(100% - 32px));
+  margin: 24px auto;
+  padding: 0 0 24px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text-main);
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.8rem);
+}
+
+h2 {
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+
+button,
+input {
+  font: inherit;
+}
