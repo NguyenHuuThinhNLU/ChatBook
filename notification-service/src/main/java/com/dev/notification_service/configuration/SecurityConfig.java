@@ -18,28 +18,29 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINT = {"/email/send"}; // DS cac endpoint public
+
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT)
+        http.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT)
                 .permitAll()
-//                .hasAnyAuthority("ROLE_ADMIN")
+                //                .hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest()
                 .authenticated());
 
         // Cung cap cho header 1 authentication token co the cho decoder moi co the hieu duoc token
         http.oauth2ResourceServer(
-                oauth2 -> oauth2.jwt(jwtConfigurer ->
-                                jwtConfigurer.decoder(customJwtDecoder)
-                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())) // Cung cap cach ma hoa token
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Khi authentication failed thi se dieu huong cho user toi JwtAuthenticationEntryPoint
-        );
+                oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(customJwtDecoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())) // Cung cap cach ma hoa token
+                        .authenticationEntryPoint(
+                                new JwtAuthenticationEntryPoint()) // Khi authentication failed thi se dieu huong cho
+                // user toi JwtAuthenticationEntryPoint
+                );
 
-
-        http.csrf(AbstractHttpConfigurer::disable);// bao ve endpoint truoc cross
+        http.csrf(AbstractHttpConfigurer::disable); // bao ve endpoint truoc cross
         return http.build();
     }
 
@@ -61,4 +62,3 @@ public class SecurityConfig {
     // Tranh CORS (Cross-Origin Resource Sharing) error khi frontend va backend khac domain
 
 }
-

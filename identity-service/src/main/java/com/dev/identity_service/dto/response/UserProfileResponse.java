@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.security.cert.Extension;
 import java.time.LocalDate;
 
 @Data
@@ -15,6 +16,9 @@ import java.time.LocalDate;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UserProfileResponse {
     String id;
+    String userId;
+    String userName;
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

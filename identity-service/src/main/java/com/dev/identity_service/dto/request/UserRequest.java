@@ -24,6 +24,8 @@ public class UserRequest {
     String firstName;
     String lastName;
 
+    String email;
+
     @DobConstraint(min = 16, message = "INVALID_DOB")
     LocalDate dob;
 
