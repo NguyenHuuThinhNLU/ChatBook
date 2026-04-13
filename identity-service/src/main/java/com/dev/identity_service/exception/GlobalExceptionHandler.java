@@ -20,13 +20,14 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = RuntimeException.class)
-        // This method will handle all RuntimeExceptions thrown by any controller
-    ResponseEntity<ApiResponse> handlingRuntimeException(AppException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
+    // This method will handle all RuntimeExceptions thrown by any controller
+    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         ApiResponse response = new ApiResponse();
 
-        response.setMessage(exception.getMessage()); // sets the message from the exception
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(response); // returns a bad request(400) response with the custom error code and message
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMsg());
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
     }
 
     // Custom exception handler for AppException

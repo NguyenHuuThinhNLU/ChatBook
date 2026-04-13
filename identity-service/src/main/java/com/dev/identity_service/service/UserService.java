@@ -1,5 +1,6 @@
 package com.dev.identity_service.service;
 
+import com.dev.event.dto.NotificationEvent;
 import com.dev.identity_service.constant.PredefinedRole;
 import com.dev.identity_service.dto.request.UserRequest;
 import com.dev.identity_service.dto.request.UserUpdateRequest;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +42,8 @@ public class UserService {
     RoleRepository roleRepository;
     ProfileClient profileClient;
     ProfileMapper profileMapper;
+    KafkaTemplate<String, Object> kafkaTemplate;
+
 
     public UserResponse createUser(UserRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -51,7 +55,13 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-        user = userRepository.save(user); // Save the user to the database
+        user.setEmailVerified(false);
+        try {
+            user = userRepository.save(user); // Save the user to the database
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
 
         var profileRequest = profileMapper.toUserProfileCreationRequest(request); // Convert UserRequest to UserProfileCreationRequest
         profileRequest.setUserId(user.getUid());
@@ -61,7 +71,21 @@ public class UserService {
 
         log.info("Authorization Header: {}", authHeader);
 
-        var profileResponse = profileClient.createProfile(profileRequest); // Call the ProfileClient to create a user profile
+        profileClient.createProfile(profileRequest); // Call the ProfileClient to create a user profile
+
+
+
+        // publish messag to kafka
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                .channel("EMAIL")
+                .receiver(request.getEmail())
+                .subject("Welcome to bookteria")
+                .body("Hello, " + request.getUsername())
+                .build();
+
+        // Publish message to kafka
+        kafkaTemplate.send("notification-delivery", notificationEvent);
+
 
         return userMapper.toUserResponse(user); // Convert User entity to UserResponse DTO
     }

@@ -17,10 +17,16 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 jwt:
     signerKey: ${JWT_SIGNER_KEY:BE0T6g+UrAECQpCkxUF1Xj6NzSMIhnJ1dl3tFGwwH2oisjAaXOB+3QOX3nl3HD3r}
     valid-duration: 3600 # in seconds
-    refreshable-duration: 360000 # in seconds
+    refreshable-duration: 36000 # in seconds
 app:
   service:
     profile: http://localhost:8081/profile

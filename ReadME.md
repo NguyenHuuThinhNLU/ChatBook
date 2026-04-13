@@ -20,3 +20,7 @@ BookHT/
 ├── api-gateway/           # API Gateway (Spring Cloud Gateway)
 ├── service-discovery/     # Service Discovery (Eureka Server)
 └── pom.xml                # Pom cha (multi-module Maven)
+
+
+# install Kafka
+`docker-compose up -d`

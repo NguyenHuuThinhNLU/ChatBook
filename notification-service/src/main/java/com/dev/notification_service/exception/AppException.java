@@ -1,6 +1,6 @@
 package com.dev.notification_service.exception;
 
-public class AppException extends RuntimeException{
+public class AppException extends RuntimeException {
     // Custom exception class to handle application-specific errors
     private ErrorCode errorCode;
 
@@ -17,4 +17,3 @@ public class AppException extends RuntimeException{
         this.errorCode = errorCode;
     }
 }
-
