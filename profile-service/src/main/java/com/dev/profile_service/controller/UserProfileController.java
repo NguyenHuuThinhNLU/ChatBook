@@ -1,13 +1,15 @@
 package com.dev.profile_service.controller;
 
-import com.dev.profile_service.dto.response.UserProfileResponse;
-import com.dev.profile_service.service.UserProfileService;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.dev.profile_service.dto.response.UserProfileResponse;
+import com.dev.profile_service.service.UserProfileService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +18,6 @@ public class UserProfileController {
 
     @Autowired
     UserProfileService userProfileService;
-
 
     @GetMapping(value = "/users/{profileId}")
     public UserProfileResponse getProfile(@PathVariable String profileId) {

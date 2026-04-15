@@ -55,7 +55,7 @@ public class UserController {
     ApiResponse<UserResponse> updateUser(@PathVariable String userid, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>
                         builder()
-                .result(userService.updatUser(userid, request))
+                .result(userService.updateUser(userid, request))
                 .build();
 
     }

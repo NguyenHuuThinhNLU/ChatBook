@@ -90,7 +90,7 @@ public class AuthenticationService {
         // Payload chua thong tin nguoi dung, bao gom username, issuer, thoi gian bat dau va het han
         // Bao gom claims: username, issuer, issued at, expiration time
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername()) // Ussername of the user
+                .subject(user.getUid()) // uid of the user
                 .issuer("nguyenthinh.com") // Issuer of the token
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli())) // Token expires in 1 hour

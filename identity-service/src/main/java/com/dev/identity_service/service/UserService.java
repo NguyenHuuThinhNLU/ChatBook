@@ -106,7 +106,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findById(userid).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)));
     }
 
-    public UserResponse updatUser(String uid, UserUpdateRequest request) {
+    public UserResponse updateUser(String uid, UserUpdateRequest request) {
         User user = userRepository.findById(uid).orElseThrow(() -> new RuntimeException("User not found with id: " + uid));
         userMapper.upadateUser(user, request);
         // Update user roles if provided
