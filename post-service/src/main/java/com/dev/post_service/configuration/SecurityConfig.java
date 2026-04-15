@@ -1,5 +1,6 @@
-package com.dev.profile_service.configuration;
+package com.dev.post_service.configuration;
 
+import com.dev.post_service.configuration.CustomJwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity // Cho phep su dung @PreAuthorize, @PostAuthorize, @Secured, @RolesAllowed
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINT = {"/internal/users"}; // DS cac endpoint public
+    private static final String[] PUBLIC_ENDPOINT = {"/email/send"}; // DS cac endpoint public
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;

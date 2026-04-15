@@ -1,20 +1,22 @@
 package com.dev.profile_service.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.dev.profile_service.dto.request.ProfileCreateRequest;
 import com.dev.profile_service.dto.response.UserProfileResponse;
 import com.dev.profile_service.entity.UserProfile;
 import com.dev.profile_service.mapper.UserProfileMapper;
 import com.dev.profile_service.repository.UserProfileRepository;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,6 @@ public class UserProfileService {
     @Autowired
     UserProfileMapper userProfileMapper;
 
-
     public UserProfileResponse createProfile(ProfileCreateRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
 
@@ -37,9 +38,8 @@ public class UserProfileService {
     }
 
     public UserProfileResponse getProfile(String id) {
-        UserProfile userProfile = userProfileRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("User profile not found")
-        );
+        UserProfile userProfile =
+                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("User profile not found"));
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
@@ -52,8 +52,6 @@ public class UserProfileService {
     public List<UserProfileResponse> getAllProfiles() {
         var profiles = userProfileRepository.findAll();
 
-        return profiles.stream()
-                .map(userProfileMapper::toUserProfileResponse)
-                .toList();
+        return profiles.stream().map(userProfileMapper::toUserProfileResponse).toList();
     }
 }
