@@ -17,6 +17,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1008, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1009, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     CANNOT_SEND_EMAIL(1010, "Can not send email", HttpStatus.BAD_REQUEST),
+    BREVO_API_KEY_MISSING(1011, "Brevo API key is missing", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String msg, HttpStatus httpStatus) {
