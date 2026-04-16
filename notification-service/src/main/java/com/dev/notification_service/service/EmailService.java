@@ -39,6 +39,10 @@ public class EmailService {
     String senderEmail;
 
     public EmailResponse sendEmail(SendEmailRequest request) {
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new AppException(ErrorCode.BREVO_API_KEY_MISSING);
+        }
+
         EmailRequest emailRequest = EmailRequest.builder()
                 .sender(Sender.builder()
                         .name(senderName)
