@@ -20,6 +20,6 @@ spring:
   notification:
     email:
       brevo-url: https://api.brevo.com
-      brevo-apikey: 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
+      brevo-apikey: <key>
       sender-name: Dev Huu Thinh
       sender-email: thinhnguyen23052004@gmail.com
