@@ -3,10 +3,13 @@ export const CONFIG =  {
 };
 
 export const API = {
+
   LOGIN: "/identity/auth/token",
   MY_INFO: "/profile/users/my-profile",
   MY_POST: "/post/my-posts",
-  CREATE_POST: "/post/create",
+  LOGOUT: "/identity/auth/logout",
+  REGISTER: "/identity/users/registration",
+  CREATE_POST: "/post/create-post",
   UPDATE_PROFILE: "/profile/users/my-profile",
   UPDATE_AVATAR: "/profile/users/avatar",
   SEARCH_USER: "/profile/users/search",

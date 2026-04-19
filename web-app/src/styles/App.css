@@ -19,6 +19,85 @@
   justify-content: flex-end;
 }
 
+.user-menu {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  border-radius: 999px;
+  padding: 8px 10px 8px 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+}
+
+.user-menu-name {
+  font-weight: 600;
+}
+
+.user-menu-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #d38a5e, #9a5532);
+  color: #fff;
+  font-weight: 700;
+}
+
+.user-menu-avatar.large {
+  width: 56px;
+  height: 56px;
+  font-size: 1.2rem;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 260px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  z-index: 20;
+}
+
+.user-menu-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-menu-item {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: var(--surface-alt);
+  color: var(--text-main);
+  border-radius: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.user-menu-item.danger {
+  color: #b42318;
+  background: rgba(244, 67, 54, 0.08);
+}
+
 .tab-list {
   display: flex;
   gap: 12px;
@@ -26,11 +105,18 @@
 }
 
 .tab {
+  width: 100%;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-main);
   padding: 10px 16px;
   border-radius: 999px;
+  box-sizing: border-box;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     transform 0.2s ease,
@@ -70,6 +156,13 @@
     linear-gradient(135deg, #fffaf4, #ffffff 55%, #f8efe7);
   border: 1px solid rgba(197, 156, 123, 0.22);
   box-shadow: var(--shadow-soft);
+}
+
+.login-intro-copy,
+.hero-highlight-list,
+.profile-field-list {
+  display: grid;
+  gap: 14px;
 }
 
 .hero-copy,
@@ -165,7 +258,28 @@
 }
 
 .auth-switcher {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  padding: 6px;
+  border-radius: 20px;
+  background: rgba(45, 33, 28, 0.04);
+}
+
+.auth-switcher .tab {
+  width: 100%;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 1;
+  font-weight: 600;
+  transform: none;
+}
+
+.auth-switcher .tab:hover {
+  transform: none;
 }
 
 .field-grid {
@@ -267,6 +381,19 @@
   color: var(--text-main);
 }
 
+.mini-post-card {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+}
+
+.mini-post-card.empty {
+  background: var(--surface-alt);
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -292,6 +419,10 @@
 
 .post-creator {
   gap: 12px;
+}
+
+.side-stack {
+  align-content: start;
 }
 
 .login-layout {
@@ -438,6 +569,56 @@
   min-height: 180px;
 }
 
+.profile-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.profile-summary-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.profile-summary-copy strong {
+  color: var(--text-main);
+  font-size: 1.1rem;
+}
+
+.profile-summary-copy span {
+  color: var(--text-soft);
+}
+
+.profile-details-card {
+  gap: 18px;
+}
+
+.profile-field-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-field-row:last-child {
+  border-bottom: 0;
+}
+
+.profile-field-row span {
+  color: var(--text-soft);
+}
+
+.profile-field-row strong {
+  color: var(--text-main);
+  text-align: right;
+}
+
+.split-actions {
+  justify-content: space-between;
+}
+
 .scene-layout {
   grid-template-columns: 240px minmax(0, 1fr) 280px;
   align-items: start;
@@ -526,11 +707,18 @@
   .hero-actions,
   .form-row,
   .composer,
+  .profile-field-row,
   .section-heading,
   .topbar-actions,
   .user-chip {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .user-menu-dropdown {
+    left: 0;
+    right: auto;
+    min-width: min(260px, calc(100vw - 48px));
   }
 
   .message-item {

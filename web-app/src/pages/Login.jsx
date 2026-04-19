@@ -9,6 +9,7 @@ const initialLoginForm = {
 
 const initialRegisterForm = {
   username: '',
+  email: '',
   password: '',
   confirmPassword: '',
   firstName: '',
@@ -72,7 +73,10 @@ function Login({ onLoginSuccess }) {
       throw new Error('Khong lay duoc thong tin nguoi dung.')
     }
 
-    onLoginSuccess?.(user)
+    onLoginSuccess?.({
+      ...user,
+      username,
+    })
   }
 
   const handleLoginSubmit = async (event) => {
@@ -95,8 +99,23 @@ function Login({ onLoginSuccess }) {
     event.preventDefault()
     resetMessages()
 
+    if (!registerForm.username.trim()) {
+      setErrorMessage('Vui lòng đăng nhập.')
+      return
+    }
+
+    if (!registerForm.email.trim()) {
+      setErrorMessage('Vui lòng nhập Email.')
+      return
+    }
+
+    if (!registerForm.email.includes('@')) {
+      setErrorMessage('Email không hợp lệ.')
+      return
+    }
+
     if (registerForm.password !== registerForm.confirmPassword) {
-      setErrorMessage('Mat khau nhap lai khong khop.')
+      setErrorMessage('Mật khẩu nhập lại không khớp.')
       return
     }
 
@@ -105,6 +124,7 @@ function Login({ onLoginSuccess }) {
     try {
       await register({
         username: registerForm.username.trim(),
+        email: registerForm.email.trim(),
         password: registerForm.password,
         firstName: registerForm.firstName.trim(),
         lastName: registerForm.lastName.trim(),
@@ -112,11 +132,11 @@ function Login({ onLoginSuccess }) {
         city: registerForm.city.trim(),
       })
 
-      setSuccessMessage('Dang ky thanh cong. Dang tien hanh dang nhap...')
+      setSuccessMessage('Đăng ký thành công. Đang tiến hành đăng nhập...')
       await completeLogin(registerForm.username.trim(), registerForm.password)
     } catch (error) {
       setErrorMessage(
-        getApiMessage(error, 'Dang ky that bai. Vui long kiem tra lai du lieu.'),
+        getApiMessage(error, 'Đăng ký thất bại. Vui lòng kiểm tra lại dữ liệu.'),
       )
     } finally {
       setIsSubmitting(false)
@@ -127,30 +147,39 @@ function Login({ onLoginSuccess }) {
     <div className="page page-login">
       <section className="login-layout">
         <article className="login-intro surface-card">
-          <span className="eyebrow">Chao mung den voi BookLoop</span>
-          <h1>
-            {isRegisterMode
-              ? 'Tao tai khoan de dang sach va bat dau trao doi voi cong dong.'
-              : 'Dang nhap de dang sach, ket ban va trao doi sach de dang hon.'}
-          </h1>
-          <p>
-            {isRegisterMode
-              ? 'Trang dang ky nay da match truc tiep voi payload ma backend cua ban dang can: username, password, firstName, lastName, dob, city.'
-              : 'Trang dang nhap giup nguoi dung tro lai nhanh, xem bai dang sach va tiep tuc cuoc trao doi dang mo.'}
-          </p>
+          <div className="login-intro-copy">
+            <span className="eyebrow">BookLoop Access</span>
+            <h1>
+              {isRegisterMode
+                ? 'Tạo tài khoản để đăng sách, kết nối và bắt đầu trao đổi.'
+                : 'Đăng nhập để tiếp tục quản lý bài đăng và các cuộc trò chuyện của bạn.'}
+            </h1>
+            <p>
+              Trang đang nhập
+            </p>
+          </div>
 
           <div className="feature-list">
             <div className="feature-item">
-              <strong>Dang bai trong vai giay</strong>
-              <span>Dang sach cu, mo ta tinh trang va dat nhu cau trao doi ngay.</span>
+              <div className="avatar">01</div>
+              <div>
+                <strong>Đăng bài nhanh</strong>
+                <span>Mô tả sách, tình trạng và nhu cầu.</span>
+              </div>
             </div>
             <div className="feature-item">
-              <strong>Ho so nguoi doc ro rang</strong>
-              <span>Them ten, ngay sinh va thanh pho de de xep giao dich hon.</span>
+              <div className="avatar">02</div>
+              <div>
+                <strong>Quản lý profile</strong>
+                <span>Xem thông tin tài khoản menu người dùng.</span>
+              </div>
             </div>
             <div className="feature-item">
-              <strong>Trao doi an toan hon</strong>
-              <span>Chat truc tiep truoc khi gap mat hoac chuyen khoan mua sach.</span>
+              <div className="avatar">03</div>
+              <div>
+                <strong>Chuyển sang Chat </strong>
+                <span>Theo dõi thương lượng và tiến độ giao dịch.</span>Theo doi thuong luong va tien do giao dich khong bi roi mach.
+              </div>
             </div>
           </div>
         </article>
@@ -162,25 +191,21 @@ function Login({ onLoginSuccess }) {
               className={authMode === 'login' ? 'tab active' : 'tab'}
               onClick={() => handleModeChange('login')}
             >
-              Dang nhap
+              Đăng nhập
             </button>
             <button
               type="button"
               className={authMode === 'register' ? 'tab active' : 'tab'}
               onClick={() => handleModeChange('register')}
             >
-              Dang ky
+              Đăng ký
             </button>
           </div>
 
           <div className="section-heading compact">
             <div>
-              <span className="section-kicker">Tai khoan nguoi dung</span>
-              <h2>
-                {isRegisterMode
-                  ? 'Tao tai khoan moi'
-                  : 'Dang nhap vao cong dong sach'}
-              </h2>
+              <span className="section-kicker">Tài khoản</span>
+              <h2>{isRegisterMode ? 'Tao tai khoan moi' : 'Truy cap BookLoop'}</h2>
             </div>
           </div>
 
@@ -221,6 +246,17 @@ function Login({ onLoginSuccess }) {
                 />
               </label>
 
+              <label className="field">
+                <span>Email</span>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={registerForm.email}
+                  onChange={handleRegisterChange}
+                />
+              </label>
+
               <div className="field-grid">
                 <label className="field">
                   <span>Ngay sinh</span>
@@ -244,27 +280,29 @@ function Login({ onLoginSuccess }) {
                 </label>
               </div>
 
-              <label className="field">
-                <span>Mat khau</span>
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Toi thieu 6 ky tu"
-                  value={registerForm.password}
-                  onChange={handleRegisterChange}
-                />
-              </label>
+              <div className="field-grid">
+                <label className="field">
+                  <span>Mật Khẩu</span>
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="Toi thieu 6 ky tu"
+                    value={registerForm.password}
+                    onChange={handleRegisterChange}
+                  />
+                </label>
 
-              <label className="field">
-                <span>Nhap lai mat khau</span>
-                <input
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Nhap lai mat khau"
-                  value={registerForm.confirmPassword}
-                  onChange={handleRegisterChange}
-                />
-              </label>
+                <label className="field">
+                  <span>Nhập lại mật khẩu</span>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Nhap lai mat khau"
+                    value={registerForm.confirmPassword}
+                    onChange={handleRegisterChange}
+                  />
+                </label>
+              </div>
 
               {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
               {successMessage ? <p className="form-success">{successMessage}</p> : null}
@@ -280,7 +318,7 @@ function Login({ onLoginSuccess }) {
           ) : (
             <form className="form-grid" onSubmit={handleLoginSubmit}>
               <label className="field">
-                <span>Ten dang nhap</span>
+                <span>Tên Đăng Nhập</span>
                 <input
                   name="username"
                   type="text"
@@ -291,7 +329,7 @@ function Login({ onLoginSuccess }) {
               </label>
 
               <label className="field">
-                <span>Mat khau</span>
+                <span>Mật Khẩu</span>
                 <input
                   name="password"
                   type="password"
@@ -301,17 +339,6 @@ function Login({ onLoginSuccess }) {
                 />
               </label>
 
-              <div className="form-row">
-                <label className="checkbox-field">
-                  <input type="checkbox" />
-                  <span>Giu dang nhap tren thiet bi nay</span>
-                </label>
-
-                <button type="button" className="text-link">
-                  Quen mat khau
-                </button>
-              </div>
-
               {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
               {successMessage ? <p className="form-success">{successMessage}</p> : null}
 
@@ -320,15 +347,7 @@ function Login({ onLoginSuccess }) {
                 className="button button-primary wide"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Dang dang nhap...' : 'Dang nhap ngay'}
-              </button>
-
-              <button
-                type="button"
-                className="button button-secondary wide"
-                disabled={isSubmitting}
-              >
-                Tiep tuc voi Google
+                {isSubmitting ? 'Dang dang nhap...' : 'Dang nhap'}
               </button>
             </form>
           )}
@@ -336,24 +355,24 @@ function Login({ onLoginSuccess }) {
           <p className="form-footer">
             {isRegisterMode ? (
               <>
-                Da co tai khoan?{' '}
+                Đã có tài khoản?{' '}
                 <button
                   type="button"
                   className="text-link inline-link"
                   onClick={() => handleModeChange('login')}
                 >
-                  Dang nhap ngay
+                  Đăng nhập ngay
                 </button>
               </>
             ) : (
               <>
-                Chua co tai khoan?{' '}
+                Chưa có tài khoản?{' '}
                 <button
                   type="button"
                   className="text-link inline-link"
                   onClick={() => handleModeChange('register')}
                 >
-                  Tao tai khoan de bat dau trao doi
+                  Tạo tài khoản
                 </button>
               </>
             )}

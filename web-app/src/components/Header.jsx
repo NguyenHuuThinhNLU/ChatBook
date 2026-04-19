@@ -11,7 +11,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { logOut } from "../services/authenticationService";
+import { logout } from "../services/authenticationService";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -84,7 +84,7 @@ export default function Header() {
 
   const handleLogout = (event) => {
     handleMenuClose();
-    logOut();
+    void logout();
     window.location.href = "/login";
   };
 

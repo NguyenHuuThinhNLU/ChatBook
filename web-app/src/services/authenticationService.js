@@ -1,4 +1,4 @@
-import { getToken, removeToken, setToken } from "./localStorageService";
+import { getToken, removeStoredUser, removeToken, setToken } from "./localStorageService";
 import httpClient from "../configurations/httpClient";
 import { API } from "../configurations/configuration";
 
@@ -25,6 +25,7 @@ export const logout = async () => {
     }
 
     removeToken();
+    removeStoredUser();
 };
 
 export const isAuthenticated = () => {
