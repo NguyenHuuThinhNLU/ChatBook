@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.dev.profile_service.dto.request.ApiResponse;
 import com.dev.profile_service.dto.response.UserProfileResponse;
 import com.dev.profile_service.service.UserProfileService;
 
@@ -18,6 +19,13 @@ public class UserProfileController {
 
     @Autowired
     UserProfileService userProfileService;
+
+    @GetMapping(value = "/users/my-profile")
+    public ApiResponse<UserProfileResponse> getMyProfile() {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getMyProfile())
+                .build();
+    }
 
     @GetMapping(value = "/users/{profileId}")
     public UserProfileResponse getProfile(@PathVariable String profileId) {

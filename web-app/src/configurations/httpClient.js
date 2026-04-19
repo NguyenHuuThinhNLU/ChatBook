@@ -1,7 +1,52 @@
 import { CONFIG } from "./configuration";
 
-const defaultHeaders = {
-    "Content-Type": "application/json",
+const buildUrl = (path, params) => {
+    const url = new URL(`${CONFIG.API_GATEWAY}${path}`);
+
+    if (params && typeof params === "object") {
+        Object.entries(params).forEach(([key, value]) => {
+            if (value === undefined || value === null) return;
+            url.searchParams.set(key, String(value));
+        });
+    }
+
+    return url.toString();
+};
+
+const isFormData = (value) =>
+    typeof FormData !== "undefined" && value instanceof FormData;
+
+const normalizeBodyOptions = (body, options = {}) => {
+    if (body === undefined) return options;
+
+    if (isFormData(body)) {
+        // Let the browser set the multipart boundary; avoid forcing Content-Type.
+        const nextHeaders = { ...(options.headers || {}) };
+        delete nextHeaders["Content-Type"];
+        delete nextHeaders["content-type"];
+
+        return {
+            ...options,
+            headers: nextHeaders,
+            body,
+        };
+    }
+
+    if (typeof body === "string") {
+        return {
+            ...options,
+            body,
+        };
+    }
+
+    return {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+        },
+        body: JSON.stringify(body),
+    };
 };
 
 const parseResponse = async (response) => {
@@ -31,11 +76,12 @@ const parseResponse = async (response) => {
 };
 
 const request = async (path, options = {}) => {
-    const response = await fetch(`${CONFIG.API_GATEWAY}${path}`, {
-        ...options,
+    const { params, ...fetchOptions } = options;
+
+    const response = await fetch(buildUrl(path, params), {
+        ...fetchOptions,
         headers: {
-            ...defaultHeaders,
-            ...(options.headers || {}),
+            ...(fetchOptions.headers || {}),
         },
     });
 
@@ -51,8 +97,12 @@ const httpClient = {
     post: (path, body, options = {}) =>
         request(path, {
             method: "POST",
-            body: JSON.stringify(body),
-            ...options,
+            ...normalizeBodyOptions(body, options),
+        }),
+    put: (path, body, options = {}) =>
+        request(path, {
+            method: "PUT",
+            ...normalizeBodyOptions(body, options),
         }),
 };
 
